@@ -1,60 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Word To PDF</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word2PDF Pro - Convertidor Rápido y Seguro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body
-    class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-6"
-  >
-    <div
-      class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700"
-    >
-      <h1 class="text-2xl font-bold text-center mb-6 text-blue-400">
-        Convertidor Dinámico
-      </h1>
+    <!-- Agregamos soporte para iconos SVG nativos a través de Heroicons -->
+</head>
+<body class="bg-slate-900 text-slate-300 min-h-screen flex flex-col items-center p-6 font-sans">
 
-      <form id="uploadForm" class="space-y-6">
-        <div
-          id="dropzone"
-          class="border-2 border-dashed border-slate-600 rounded-xl p-10 text-center hover:border-blue-500 transition-colors cursor-pointer"
-        >
-          <input
-            type="file"
-            name="word_file"
-            id="word_file"
-            class="hidden"
-            accept=".docx"
-          />
-          <p id="file_name" class="text-slate-400">
-            Arrastra tu archivo .docx aquí o haz clic
-          </p>
-        </div>
-
-        <button
-          type="submit"
-          id="btnConvertir"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95 hidden"
-        >
-          Convertir a PDF
-        </button>
-      </form>
-
-      <div id="progressContainer" class="mt-6 hidden">
-        <div class="w-full bg-slate-700 rounded-full h-2.5">
-          <div
-            id="progressBar"
-            class="bg-blue-500 h-2.5 rounded-full"
-            style="width: 0%"
-          ></div>
-        </div>
-        <p class="text-xs text-center mt-2 text-slate-400">
-          Procesando documento...
+    <!-- Encabezado Principal -->
+    <header class="text-center w-full max-w-3xl mt-10 mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Convierte <span class="text-blue-500">Word a PDF</span>
+        </h1>
+        <p class="text-lg text-slate-400">
+            La herramienta más rápida para transformar tus documentos .docx a formato PDF manteniendo el estilo, fuentes y tablas exactamente iguales.
         </p>
-      </div>
-    </div>
+    </header>
+
+    <!-- Tarjeta Principal del Convertidor -->
+    <main class="max-w-xl w-full bg-slate-800 rounded-3xl shadow-2xl p-8 border border-slate-700 mb-16 relative">
+        
+        <!-- Contenedor de Alertas -->
+        <div id="alertBox" class="hidden mb-4 p-4 rounded-lg text-sm font-medium text-center transition-all"></div>
+
+        <form id="uploadForm" class="space-y-6">
+            <!-- Zona Drag & Drop -->
+            <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-2xl p-12 text-center hover:border-blue-500 hover:bg-slate-800/50 transition-all cursor-pointer flex flex-col items-center justify-center group">
+                
+                <!-- Icono de documento -->
+                <svg class="w-16 h-16 text-slate-500 group-hover:text-blue-400 transition-colors mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+
+                <input type="file" name="word_file" id="word_file" class="hidden" accept=".docx, application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                <p class="text-lg text-slate-300 font-medium">Arrastra tu archivo aquí</p>
+                <p class="text-sm text-slate-500 mt-2">o haz clic para explorar tu equipo</p>
+                <p class="text-xs text-slate-600 mt-4">Solo archivos .DOCX (Max 10MB)</p>
+            </div>
+
+            <!-- Detalles del archivo seleccionado (Oculto por defecto) -->
+            <div id="fileDetails" class="hidden flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <svg class="w-8 h-8 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path></svg>
+                    <div class="truncate">
+                        <p id="fileNameDisplay" class="text-sm font-medium text-white truncate"></p>
+                        <p id="fileSizeDisplay" class="text-xs text-slate-400"></p>
+                    </div>
+                </div>
+                <button type="button" id="btnRemoveFile" class="text-red-400 hover:text-red-300 p-2 focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <button type="submit" id="btnConvertir" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all transform active:scale-[0.98] hidden shadow-lg shadow-blue-900/20">
+                Convertir ahora a PDF
+            </button>
+        </form>
+
+        <!-- Barra de progreso -->
+        <div id="progressContainer" class="mt-6 hidden">
+            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
+                <div id="progressBar" class="bg-blue-500 h-full rounded-full transition-all duration-300 relative" style="width: 0%">
+                    <!-- Animación de brillo en la barra -->
+                    <div class="absolute top-0 left-0 bottom-0 right-0 bg-white/20 animate-pulse"></div>
+                </div>
+            </div>
+            <p id="progressText" class="text-sm text-center mt-3 text-blue-400 font-medium animate-pulse">Subiendo y procesando...</p>
+        </div>
+    </main>
+
+    <!-- Sección de Características -->
+    <section class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 text-center px-4">
+        <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+            <div class="bg-blue-900/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <h3 class="text-white font-bold text-lg mb-2">Uso de una sola Vez</h3>
+            <p class="text-sm text-slate-400">No se guarda los archivos en ningun lado garantizando privacidad.</p>
+        </div>
+        <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+            <div class="bg-purple-900/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            </div>
+            <h3 class="text-white font-bold text-lg mb-2">Formato Intacto</h3>
+            <p class="text-sm text-slate-400">El formato se conserva tal y como esta en tu archivo <strong>WORD</strong> que cargaste.</p>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="mt-auto pt-12 pb-6 text-slate-500 text-sm">
+        <p>&copy; 2026 Word To PDF</p>
+    </footer>
     <script src="script.js"></script>
-  </body>
-</html>
+</body>
+<ht
