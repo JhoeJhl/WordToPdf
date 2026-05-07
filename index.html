@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word To PDF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700">
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-400">Convertidor Dinámico</h1>
+        
+        <form id="uploadForm" class="space-y-6">
+            <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-xl p-10 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                <input type="file" name="word_file" id="word_file" class="hidden" accept=".docx">
+                <p id="file_name" class="text-slate-400">Arrastra tu archivo .docx aquí o haz clic</p>
+            </div>
+
+            <button type="submit" id="btnConvertir" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95 hidden">
+                Convertir a PDF
+            </button>
+        </form>
+
+        <div id="progressContainer" class="mt-6 hidden">
+            <div class="w-full bg-slate-700 rounded-full h-2.5">
+                <div id="progressBar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p class="text-xs text-center mt-2 text-slate-400">Procesando documento...</p>
+        </div>
+    </div>
+
+</body>
+</html>
