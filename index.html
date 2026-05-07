@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="icono.png">
     <title>Word2PDF Pro - Convertidor Rápido y Seguro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Agregamos soporte para iconos SVG nativos a través de Heroicons -->
@@ -25,7 +26,7 @@
         <!-- Contenedor de Alertas -->
         <div id="alertBox" class="hidden mb-4 p-4 rounded-lg text-sm font-medium text-center transition-all"></div>
 
-        <form id="uploadForm" class="space-y-6">
+        <form id="uploadForm" class="space-y-6" action="procesar.php" method="post">
             <!-- Zona Drag & Drop -->
             <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-2xl p-12 text-center hover:border-blue-500 hover:bg-slate-800/50 transition-all cursor-pointer flex flex-col items-center justify-center group">
                 

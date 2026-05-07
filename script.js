@@ -94,7 +94,11 @@ function handleFile() {
 
   // Actualizar interfaz
   fileNameDisplay.textContent = file.name;
-  fileSizeDisplay.textContent = formatBytes(file.size);
+  
+  // Verificación adicional por si el elemento no existe en el HTML
+  if (fileSizeDisplay) {
+      fileSizeDisplay.textContent = formatBytes(file.size);
+  }
 
   dropzone.classList.add("hidden");
   fileDetails.classList.remove("hidden");
@@ -118,7 +122,7 @@ form.onsubmit = async (e) => {
   btnConvertir.classList.add("opacity-50", "cursor-not-allowed");
   btnRemoveFile.disabled = true;
 
-  // Animación falsa de progreso (ya que Fetch no da progreso de descarga nativo fácil)
+  // Animación falsa de progreso
   let width = 0;
   const fakeProgress = setInterval(() => {
     if (width >= 90) clearInterval(fakeProgress);
@@ -137,30 +141,38 @@ form.onsubmit = async (e) => {
     clearInterval(fakeProgress);
     progressBar.style.width = "100%";
 
-    if (response.ok) {
-      // Descargar el archivo
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileInput.files[0].name.replace(".docx", ".pdf");
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-
-      progressText.textContent = "¡Descarga completada!";
-      progressText.classList.replace("text-blue-400", "text-green-400");
-      showAlert("¡Tu documento se convirtió y descargó con éxito!", "success");
-
-      // Resetear después de unos segundos
-      setTimeout(() => btnRemoveFile.click(), 3000);
-    } else {
-      const errorText = await response.text();
-      showAlert(errorText || "Error al procesar el archivo en el servidor.");
+    // CORRECCIÓN PRINCIPAL: Si la respuesta no es OK, lanzamos un error con el texto del servidor
+    if (!response.ok) {
+        const errorText = await response.text();
+        // Lanzamos el error para que sea capturado por el bloque catch
+        throw new Error(errorText || `Error del servidor: Código ${response.status}`);
     }
+
+    // Si llega aquí, es porque response.ok es true
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileInput.files[0].name.replace(".docx", ".pdf");
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    progressText.textContent = "¡Descarga completada!";
+    progressText.classList.replace("text-blue-400", "text-green-400");
+    showAlert("¡Tu documento se convirtió y descargó con éxito!", "success");
+
+    // Resetear después de unos segundos
+    setTimeout(() => btnRemoveFile.click(), 3000);
+
   } catch (error) {
     clearInterval(fakeProgress);
-    showAlert("Error de conexión con el servidor.");
+    // CORRECCIÓN: Mostrar el error exacto en consola para depurar
+    console.error("Fallo detallado en la petición:", error);
+    
+    // CORRECCIÓN: Mostrar el mensaje de error real en la UI
+    showAlert(`Error: ${error.message}`);
+    
   } finally {
     setTimeout(() => {
       progressContainer.classList.add("hidden");
